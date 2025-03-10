@@ -62,6 +62,4 @@ app.get("/popular", async (req, res) => {
   }
 });
 // 서버 실행
-app.listen(PORT, () => {
-  console.log(`server activated ! http://localhost:${PORT}`);
-});
+module.exports = app;
