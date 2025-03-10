@@ -9,7 +9,7 @@ const cors = require("cors"); // 프론트엔드가 서버에 요청보낼수있
 
 //앱객체만들기 , 포트설정
 const app = express(); //서버조직
-const PORT = 3000; //포트번호
+const PORT = 3001; //포트번호
 
 //api경로와 요청처리
 app.use(cors()); //cross-origin resource sharing
@@ -21,27 +21,46 @@ app.use(cors()); //cross-origin resource sharing
 // async (req,res) 비동기요청처리 - await 사용가능하게함
 app.get("/popular", async (req, res) => {
   try {
+    const region = req.query.region || "AU";
+    console.log(`requested region : ${region}`);
     const response = await axios.get(
       "https://www.googleapis.com/youtube/v3/videos",
       {
         params: {
           part: "snippet,statistics",
           chart: "mostPopular",
-          maxResults: 10,
-          regionCode: "AU",
+          maxResults: 35,
+          regionCode: region,
           key: process.env.YOUTUBE_API_KEY,
         },
       }
     );
 
-    //프론트엔드에서 사용가능하게 Json형식으로 응답을 보냄
-    res.json(response.data.items);
+    // 채널 정보 추가
+    const videoItems = response.data.items;
+    const channelPromises = videoItems.map((video) =>
+      axios.get("https://www.googleapis.com/youtube/v3/channels", {
+        params: {
+          part: "snippet",
+          id: video.snippet.channelId,
+          key: process.env.YOUTUBE_API_KEY,
+        },
+      })
+    );
+
+    const channelResponses = await Promise.all(channelPromises);
+
+    const videoWithChannel = videoItems.map((video, index) => ({
+      ...video,
+      channelName: channelResponses[index].data.items[0].snippet.title,
+    }));
+
+    res.json(videoWithChannel); // ✔️ 응답 여기에서 끝냄
   } catch (error) {
-    console.error("youtube API call error :", error.message);
+    console.error("youtube API call error:", error.message);
     res.status(500).json({ error: "fail to fetch the youtube data" });
   }
 });
-
 // 서버 실행
 app.listen(PORT, () => {
   console.log(`server activated ! http://localhost:${PORT}`);
