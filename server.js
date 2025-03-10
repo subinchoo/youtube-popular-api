@@ -14,6 +14,7 @@ const PORT = 3001; //포트번호
 //api경로와 요청처리
 app.use(cors()); //cross-origin resource sharing
 //다른 도메인에서 서버에 접근할수있도록 허용, 프론트엔드가 서버접근가능
+console.log("YOUTUBE_API_KEY:", process.env.YOUTUBE_API_KEY);
 
 //경로만들기
 //GET 요청처리하는 경로
