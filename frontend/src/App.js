@@ -19,7 +19,9 @@ function App() {
 
   useEffect(() => {
     // 백엔드 서버의 popular API 요청
-    fetch(`https://youtube-popular.vercel.app/popular?region=${region}`)
+    fetch(
+      `https://youtube-popular-back.vercel.app/api/popular?region=${region}`
+    )
       .then((res) => res.json())
       .then((data) => setVideos(data))
       .catch((err) => console.error("API fetch error:", err));
@@ -36,6 +38,7 @@ function App() {
       </div>
 
       <div className="label">
+        <h2> {new Date().toLocaleString()}</h2>
         <label htmlFor="region">Select Region:</label>
         <select id="region" value={region} onChange={handleRegionChange}>
           {countries.map((country) => {

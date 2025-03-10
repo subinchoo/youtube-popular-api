@@ -20,7 +20,7 @@ console.log("YOUTUBE_API_KEY:", process.env.YOUTUBE_API_KEY);
 //GET 요청처리하는 경로
 // /popular은 내가만든 경로임
 // async (req,res) 비동기요청처리 - await 사용가능하게함
-app.get("/popular", async (req, res) => {
+app.get("/api/popular", async (req, res) => {
   try {
     const region = req.query.region || "AU";
     console.log(`requested region : ${region}`);
